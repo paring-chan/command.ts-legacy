@@ -1,6 +1,6 @@
 export interface CommandClientOptions {
   commandHandler?: {
-    watch?: boolean;
-    currentDir: string;
-  };
+    watch?: boolean
+    currentDir: string
+  }
 }
