@@ -1,12 +1,23 @@
-export default class Extension {
+import CommandClient from './CommandClient'
+
+interface Extension {
+  __path: string
+}
+
+class Extension {
   load() {}
   unload() {}
   permit(): boolean {
     return true
   }
 
-  async parse() {
-    const builtin = ['load', 'unload', 'permit']
-    const keys = Object.keys(this).filter((r) => !builtin.includes(r))
+  client: CommandClient
+
+  constructor(client: CommandClient) {
+    this.client = client
   }
+
+  static builtinFunctions = ['load', 'unload', 'permit']
 }
+
+export default Extension
