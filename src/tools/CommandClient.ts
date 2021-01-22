@@ -1,11 +1,12 @@
-import { Client, ClientOptions, Util } from 'discord.js'
+import { Client, ClientOptions, Message, Util } from 'discord.js'
 import path from 'path'
-import { CommandClientOptions } from '../types'
+import { CommandClientOptions, CommandType } from '../types'
 import CommandClientError from './CommandClientError'
 import Extension from './Extension'
 
 export default class CommandClient extends Client {
   commandClientOptions: CommandClientOptions
+  commands: CommandType[] = []
 
   constructor(options: CommandClientOptions, clientOptions?: ClientOptions) {
     super(clientOptions)
@@ -18,6 +19,13 @@ export default class CommandClient extends Client {
       options,
     )
     this.commandClientOptions = options
+    this.on('message', this._handleCommand)
+  }
+
+  private _handleCommand(msg: Message) {
+    if (msg.author.bot) return
+    if (msg.author.id === this.user!.id) return
+    this.commandClientOptions.commandHandler.prefix
   }
 
   loadExtension(path1: string) {
@@ -43,13 +51,19 @@ export default class CommandClient extends Client {
     ) as any[]
     if (!extensions.length)
       throw new CommandClientError('No extensions found in module')
-    console.log(
-      extensions.map((i) => {
-        const ext = new i(this) as Extension
-        const keys = Object.getOwnPropertyNames(i.prototype).filter(
-          (r) => r !== 'constructor' && !Extension.builtinFunctions.includes(r),
-        )
-      }),
-    )
+    extensions.forEach((i) => {
+      const ext = new i(this) as any
+      const keys = Object.getOwnPropertyNames(i.prototype).filter(
+        (r) =>
+          ![...Extension.builtinFunctions, 'constructor', 'name'].includes(r),
+      )
+      const values = keys.map((r) => {
+        const fn = ext[r]
+        const name = Reflect.get(fn, 'command:name')
+        const aliases = Reflect.get(fn, 'command:aliases')
+        return { fn, name, aliases }
+      }) as CommandType[]
+      values.forEach((r) => this.commands.push(r))
+    })
   }
 }
