@@ -11,4 +11,6 @@ const client = new CommandClient({
 
 client.loadExtension('extensions/test')
 
+client.on('ready', () => console.log('ready'))
+
 client.login(process.env.TOKEN)

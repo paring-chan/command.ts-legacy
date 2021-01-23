@@ -1,9 +1,12 @@
-import { Arg, Command, Extension } from 'command.ts'
+import { Arg, Command, Extension, Msg } from 'command.ts'
+import { Message } from 'discord.js'
 
 export default class Test extends Extension {
-  @Command({ aliases: ['test'] })
-  asdf(@Arg({}) test: string) {
-    console.log(test)
-    console.log('test')
+  @Command()
+  say(
+    @Msg() msg: Message,
+    @Arg({ required: true, rest: true }) content: string,
+  ) {
+    return msg.reply(content)
   }
 }
