@@ -11,3 +11,15 @@ export type CommandType = {
   aliases: string[]
   fn: Function
 }
+
+export type ArgParam = {
+  rest?: boolean
+  required?: boolean
+}
+
+export type ArgType = {
+  rest: boolean
+  required: boolean
+  index: number
+  key: string | symbol
+}

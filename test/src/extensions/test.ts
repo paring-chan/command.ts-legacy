@@ -1,8 +1,9 @@
-import { Command, Extension } from 'command.ts'
+import { Arg, Command, Extension } from 'command.ts'
 
 export default class Test extends Extension {
   @Command({ aliases: ['test'] })
-  asdf() {
+  asdf(@Arg({}) test: string) {
+    console.log(test)
     console.log('test')
   }
 }

@@ -6,7 +6,7 @@ import Extension from './Extension'
 
 export default class CommandClient extends Client {
   commandClientOptions: CommandClientOptions
-  commands: CommandType[] = []
+  extensions: Extension[] = []
 
   constructor(options: CommandClientOptions, clientOptions?: ClientOptions) {
     super(clientOptions)
@@ -22,10 +22,25 @@ export default class CommandClient extends Client {
     this.on('message', this._handleCommand)
   }
 
-  private _handleCommand(msg: Message) {
+  private async _handleCommand(msg: Message) {
     if (msg.author.bot) return
     if (msg.author.id === this.user!.id) return
-    this.commandClientOptions.commandHandler.prefix
+    const prefix = this.commandClientOptions.commandHandler.prefix
+    if (!msg.content.startsWith(prefix)) return
+    const args = msg.content.slice(prefix.length).split(' ')
+    const command = args.shift()
+    if (!command) return
+    console.log(this.extensions)
+    const mod = this.extensions.find((r) =>
+      r.commands.find((r) => r.name === command || r.aliases.includes(command)),
+    )
+    if (!mod) return
+    const cmd = mod.commands.find(
+      (r) => r.name === command || r.aliases.includes(command),
+    )
+    if (!cmd) return
+    if (!(await mod.permit())) return
+    cmd.fn(msg, args)
   }
 
   loadExtension(path1: string) {
@@ -57,13 +72,16 @@ export default class CommandClient extends Client {
         (r) =>
           ![...Extension.builtinFunctions, 'constructor', 'name'].includes(r),
       )
-      const values = keys.map((r) => {
-        const fn = ext[r]
-        const name = Reflect.get(fn, 'command:name')
-        const aliases = Reflect.get(fn, 'command:aliases')
-        return { fn, name, aliases }
-      }) as CommandType[]
-      values.forEach((r) => this.commands.push(r))
+      ext.commands = keys
+        .filter((r) => Reflect.get(ext[r], 'discord:type') === 'command')
+        .map((r) => {
+          const fn = ext[r]
+          const name = Reflect.get(fn, 'command:name')
+          const aliases = Reflect.get(fn, 'command:aliases')
+          return { fn, name, aliases }
+        }) as CommandType[]
+
+      this.extensions.push(ext)
     })
   }
 }

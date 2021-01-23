@@ -1,4 +1,5 @@
 import 'reflect-metadata'
+import 'dotenv/config'
 import { CommandClient } from 'command.ts'
 
 const client = new CommandClient({
@@ -9,3 +10,5 @@ const client = new CommandClient({
 })
 
 client.loadExtension('extensions/test')
+
+client.login(process.env.TOKEN)
