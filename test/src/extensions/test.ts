@@ -9,4 +9,11 @@ export default class Test extends Extension {
   ) {
     return msg.reply(content)
   }
+
+  @Command({ name: 'unload' })
+  unloadExt(@Msg() msg: Message) {
+    this.client.unloadExtensions('extensions/test')
+    // console.log(this)
+    return msg.reply('unload')
+  }
 }

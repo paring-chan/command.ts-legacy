@@ -9,7 +9,7 @@ const client = new CommandClient({
   },
 })
 
-client.loadExtension('extensions/test')
+client.loadExtensions('extensions/test')
 
 client.on('ready', () => console.log('ready'))
 
