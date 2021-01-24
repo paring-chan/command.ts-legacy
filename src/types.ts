@@ -17,9 +17,16 @@ export type ArgParam = {
   required?: boolean
 }
 
-export type ArgType = {
-  rest: boolean
-  required: boolean
-  index: number
-  key: string | symbol
-}
+export type ArgType =
+  | {
+      rest: boolean
+      required: boolean
+      index: number
+      key: string | symbol
+      type: 'arg'
+    }
+  | {
+      type: 'msg'
+      index: number
+      key: string | symbol
+    }

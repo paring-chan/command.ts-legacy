@@ -3,10 +3,11 @@ import CommandClient from './CommandClient'
 
 interface Extension {
   __path: string
-  commands: CommandType[]
 }
 
 class Extension {
+  commands: CommandType[] = []
+
   load() {}
   unload() {}
   permit(): boolean | Promise<Boolean> {

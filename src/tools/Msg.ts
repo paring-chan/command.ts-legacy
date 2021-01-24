@@ -1,8 +1,8 @@
-import { ArgParam } from '../types'
+import { ArgType } from '../types'
 import CommandClientError from './CommandClientError'
 import Extension from './Extension'
 
-export default function Arg(options: ArgParam = {}) {
+export default function Msg() {
   return function (
     target: Object,
     propertyKey: string | symbol,
@@ -12,13 +12,11 @@ export default function Arg(options: ArgParam = {}) {
       throw new CommandClientError('@Arg decorator must be used in extension.')
     const fn = (target as any)[propertyKey]
     if (!Reflect.get(fn, 'args')) Reflect.set(fn, 'args', [])
-    const prevArgs = Reflect.get(fn, 'args')
+    const prevArgs: ArgType[] = Reflect.get(fn, 'args')
     prevArgs.push({
-      rest: options.rest || false,
-      required: options.required || false,
       index: parameterIndex,
       key: propertyKey,
-      type: 'arg',
+      type: 'msg',
     })
     Reflect.set(fn, 'args', prevArgs)
   }

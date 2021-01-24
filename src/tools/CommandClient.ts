@@ -30,7 +30,6 @@ export default class CommandClient extends Client {
     const args = msg.content.slice(prefix.length).split(' ')
     const command = args.shift()
     if (!command) return
-    console.log(this.extensions)
     const mod = this.extensions.find((r) =>
       r.commands.find((r) => r.name === command || r.aliases.includes(command)),
     )
