@@ -7,10 +7,9 @@ const client = new CommandClient({
   commandHandler: {
     prefix: '!!',
   },
+  watch: true,
 })
 
 client.loadExtensions('extensions/test')
-
-client.on('ready', () => console.log('ready'))
 
 client.login(process.env.TOKEN)

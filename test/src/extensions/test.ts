@@ -1,4 +1,4 @@
-import { Arg, Command, Extension, Msg } from 'command.ts'
+import { Arg, Command, Extension, Listener, Msg } from 'command.ts'
 import { Message } from 'discord.js'
 
 export default class Test extends Extension {
@@ -10,10 +10,14 @@ export default class Test extends Extension {
     return msg.reply(content)
   }
 
+  @Listener('ready')
+  async ready() {
+    console.log('bot ready!')
+  }
+
   @Command({ name: 'unload' })
   unloadExt(@Msg() msg: Message) {
     this.client.unloadExtensions('extensions/test')
-    // console.log(this)
     return msg.reply('unload')
   }
 }
