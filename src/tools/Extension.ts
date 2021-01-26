@@ -1,4 +1,4 @@
-import { CommandType } from '../types'
+import { CommandType, ListenerType } from '../types'
 import CommandClient from './CommandClient'
 
 interface Extension {
@@ -7,6 +7,7 @@ interface Extension {
 
 class Extension {
   commands: CommandType[] = []
+  listeners: ListenerType[] = []
 
   load() {}
   unload() {}

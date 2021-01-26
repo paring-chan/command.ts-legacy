@@ -1,5 +1,4 @@
 import { Message } from 'discord.js'
-import { createNoSubstitutionTemplateLiteral } from 'typescript'
 import { ArgType } from '../types'
 
 export default function Command(opts?: { name?: string; aliases?: string[] }) {

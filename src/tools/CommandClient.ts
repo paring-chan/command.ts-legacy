@@ -1,20 +1,21 @@
 import { Client, ClientOptions, Message, Util } from 'discord.js'
 import path from 'path'
-import { CommandClientOptions, CommandType } from '../types'
+import { CommandClientOptions, CommandType, ListenerType } from '../types'
 import CommandClientError from './CommandClientError'
 import Extension from './Extension'
+import chokidar from 'chokidar'
 
 export default class CommandClient extends Client {
   commandClientOptions: CommandClientOptions
   extensions: Extension[] = []
+  watchers: { watcher: chokidar.FSWatcher; path: string }[] = []
 
   constructor(options: CommandClientOptions, clientOptions?: ClientOptions) {
     super(clientOptions)
     Util.mergeDefault(
       {
-        commandHandler: {
-          watch: false,
-        },
+        commandHandler: {},
+        watch: false,
       },
       options,
     )
@@ -39,11 +40,25 @@ export default class CommandClient extends Client {
     )
     if (!cmd) return
     if (!(await mod.permit())) return
-    cmd.fn(msg, args)
+    cmd.fn.bind(mod)(msg, args)
   }
 
-  loadExtension(path1: string) {
-    let path2
+  emit(event: string, ...args: any[]) {
+    const mods = this.extensions
+      .filter((r) => r.listeners.find((r) => r.event === event))
+      .map((r) => r.listeners.filter((r) => r.event === event))
+    const listeners: ListenerType[] = []
+    for (const mod of mods) {
+      for (const listener of mod) {
+        listeners.push(listener)
+      }
+    }
+    listeners.forEach((r) => r.fn(event, ...args))
+    return super.emit(event, ...args)
+  }
+
+  loadExtensions(path1: string) {
+    let path2: string
     try {
       path2 = path.resolve(
         path.join(this.commandClientOptions.currentDir, path1),
@@ -71,6 +86,7 @@ export default class CommandClient extends Client {
         (r) =>
           ![...Extension.builtinFunctions, 'constructor', 'name'].includes(r),
       )
+      ext.__path = path2
       ext.commands = keys
         .filter((r) => Reflect.get(ext[r], 'discord:type') === 'command')
         .map((r) => {
@@ -79,8 +95,35 @@ export default class CommandClient extends Client {
           const aliases = Reflect.get(fn, 'command:aliases')
           return { fn, name, aliases }
         }) as CommandType[]
+      ext.listeners = keys
+        .filter((r) => Reflect.get(ext[r], 'discord:type') === 'listener')
+        .map((r) => {
+          const fn = ext[r]
+          const event = Reflect.get(fn, 'listener:event')
+          return { fn, event }
+        }) as ListenerType[]
 
       this.extensions.push(ext)
     })
+  }
+
+  unloadExtensions(path1: string, reload: boolean = false) {
+    if (!reload) {
+    }
+    let path2: string | undefined
+    try {
+      path2 = path.resolve(
+        path.join(this.commandClientOptions.currentDir, path1),
+      )
+    } catch {
+      throw new CommandClientError(
+        'Unknown path ' +
+          path.join(this.commandClientOptions.currentDir, path1),
+      )
+    }
+    const mod = this.extensions.find((r) => r.__path === path2)
+    if (!mod) throw new CommandClientError('Module not registered.')
+    delete require.cache[require.resolve(path2)]
+    this.extensions = this.extensions.filter((r) => r !== mod)
   }
 }

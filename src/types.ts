@@ -1,14 +1,19 @@
 export interface CommandClientOptions {
   commandHandler: {
-    watch?: boolean
     prefix: string
   }
   currentDir: string
+  watch?: boolean
 }
 
 export type CommandType = {
   name: string
   aliases: string[]
+  fn: Function
+}
+
+export type ListenerType = {
+  event: string
   fn: Function
 }
 
