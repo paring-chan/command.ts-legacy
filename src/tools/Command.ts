@@ -1,7 +1,11 @@
 import { Message } from 'discord.js'
 import { ArgType } from '../types'
 
-export default function Command(opts?: { name?: string; aliases?: string[] }) {
+export default function Command(opts?: {
+  name?: string
+  aliases?: string[]
+  ownerOnly?: boolean
+}) {
   return function (
     target: any,
     propertyKey: string,
@@ -35,6 +39,11 @@ export default function Command(opts?: { name?: string; aliases?: string[] }) {
     Reflect.set(descriptor.value, 'args', Reflect.get(method, 'args'))
     Reflect.set(descriptor.value, 'command:name', opts?.name || propertyKey)
     Reflect.set(descriptor.value, 'command:aliases', opts?.aliases || [])
+    Reflect.set(
+      descriptor.value,
+      'command:owner_only',
+      opts?.ownerOnly || false,
+    )
     Reflect.set(descriptor.value, 'discord:type', 'command')
   }
 }

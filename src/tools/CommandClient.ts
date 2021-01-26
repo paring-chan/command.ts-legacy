@@ -29,8 +29,10 @@ export default class CommandClient extends Client {
           (r) => r.__path === require.resolve(path),
         )
         if (ext) {
-          this.unloadExtensions(ext.__path, true)
-          this.loadExtensions(ext.__path, true)
+          try {
+            this.unloadExtensions(ext.__path, true)
+            this.loadExtensions(ext.__path, true)
+          } catch {}
         }
       })
     }
@@ -64,7 +66,10 @@ export default class CommandClient extends Client {
       (r) => r.name === command || r.aliases.includes(command),
     )
     if (!cmd) return
-    if (!(await mod.permit(msg))) return
+    if (cmd.ownerOnly && !this.owners.includes(msg.author.id))
+      return this.emit('commandBlocked', msg, 'owner')
+    if (!(await mod.permit(msg)))
+      return this.emit('commandBlocked', msg, 'denied')
     cmd.fn.bind(mod)(msg, args)
   }
 
@@ -122,7 +127,12 @@ export default class CommandClient extends Client {
           const fn = ext[r]
           const name = Reflect.get(fn, 'command:name')
           const aliases = Reflect.get(fn, 'command:aliases')
-          return { fn, name, aliases }
+          return {
+            fn,
+            name,
+            aliases,
+            ownerOnly: Reflect.get(fn, 'command:owner_only'),
+          }
         }) as CommandType[]
       ext.listeners = keys
         .filter((r) => Reflect.get(ext[r], 'discord:type') === 'listener')

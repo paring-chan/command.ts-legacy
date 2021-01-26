@@ -10,6 +10,7 @@ export interface CommandClientOptions {
 export type CommandType = {
   name: string
   aliases: string[]
+  ownerOnly: boolean
   fn: Function
 }
 

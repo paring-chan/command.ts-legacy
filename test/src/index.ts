@@ -8,6 +8,7 @@ const client = new CommandClient({
     prefix: '!!',
   },
   watch: true,
+  owners: 'auto',
 })
 
 client.loadExtensions('extensions/test')
