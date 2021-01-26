@@ -4,6 +4,7 @@ export interface CommandClientOptions {
   }
   currentDir: string
   watch?: boolean
+  owners?: 'auto' | string[]
 }
 
 export type CommandType = {

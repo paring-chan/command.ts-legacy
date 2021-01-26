@@ -1,3 +1,4 @@
+import { Message } from 'discord.js'
 import { CommandType, ListenerType } from '../types'
 import CommandClient from './CommandClient'
 
@@ -11,7 +12,7 @@ class Extension {
 
   load() {}
   unload() {}
-  permit(): boolean | Promise<Boolean> {
+  permit(msg: Message): boolean | Promise<Boolean> {
     return true
   }
 

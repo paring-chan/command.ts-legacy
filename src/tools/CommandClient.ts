@@ -1,4 +1,4 @@
-import { Client, ClientOptions, Message, Util } from 'discord.js'
+import { Client, ClientOptions, Message, Team, Util } from 'discord.js'
 import path from 'path'
 import { CommandClientOptions, CommandType, ListenerType } from '../types'
 import CommandClientError from './CommandClientError'
@@ -8,6 +8,7 @@ import chokidar from 'chokidar'
 export default class CommandClient extends Client {
   commandClientOptions: CommandClientOptions
   extensions: Extension[] = []
+  owners: string[] = []
   watcher?: chokidar.FSWatcher
 
   constructor(options: CommandClientOptions, clientOptions?: ClientOptions) {
@@ -16,6 +17,7 @@ export default class CommandClient extends Client {
       {
         commandHandler: {},
         watch: false,
+        owners: [],
       },
       options,
     )
@@ -31,6 +33,18 @@ export default class CommandClient extends Client {
           this.loadExtensions(ext.__path, true)
         }
       })
+    }
+    if (options.owners === 'auto') {
+      this.once('ready', async () => {
+        const app = await this.fetchApplication()
+        if (app.owner instanceof Team) {
+          this.owners = app.owner.members.map((i) => i.id)
+        } else {
+          this.owners = [app.owner!.id]
+        }
+      })
+    } else {
+      this.owners = options.owners!
     }
   }
 
@@ -50,7 +64,7 @@ export default class CommandClient extends Client {
       (r) => r.name === command || r.aliases.includes(command),
     )
     if (!cmd) return
-    if (!(await mod.permit())) return
+    if (!(await mod.permit(msg))) return
     cmd.fn.bind(mod)(msg, args)
   }
 
