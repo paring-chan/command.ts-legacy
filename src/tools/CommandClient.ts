@@ -8,7 +8,7 @@ import chokidar from 'chokidar'
 export default class CommandClient extends Client {
   commandClientOptions: CommandClientOptions
   extensions: Extension[] = []
-  watchers: { watcher: chokidar.FSWatcher; path: string }[] = []
+  watcher?: chokidar.FSWatcher
 
   constructor(options: CommandClientOptions, clientOptions?: ClientOptions) {
     super(clientOptions)
@@ -21,6 +21,17 @@ export default class CommandClient extends Client {
     )
     this.commandClientOptions = options
     this.on('message', this._handleCommand)
+    if (options.watch) {
+      this.watcher = chokidar.watch(options.currentDir).on('change', (path) => {
+        const ext = this.extensions.find(
+          (r) => r.__path === require.resolve(path),
+        )
+        if (ext) {
+          this.unloadExtensions(ext.__path, true)
+          this.loadExtensions(ext.__path, true)
+        }
+      })
+    }
   }
 
   private async _handleCommand(msg: Message) {
@@ -57,12 +68,16 @@ export default class CommandClient extends Client {
     return super.emit(event, ...args)
   }
 
-  loadExtensions(path1: string) {
+  loadExtensions(path1: string, absolute: boolean = false) {
     let path2: string
     try {
-      path2 = path.resolve(
-        path.join(this.commandClientOptions.currentDir, path1),
-      )
+      if (absolute) {
+        path2 = path.resolve(path1)
+      } else {
+        path2 = path.resolve(
+          path.join(this.commandClientOptions.currentDir, path1),
+        )
+      }
     } catch {
       throw new CommandClientError(
         'Unknown module ' +
@@ -86,7 +101,7 @@ export default class CommandClient extends Client {
         (r) =>
           ![...Extension.builtinFunctions, 'constructor', 'name'].includes(r),
       )
-      ext.__path = path2
+      ext.__path = require.resolve(path2)
       ext.commands = keys
         .filter((r) => Reflect.get(ext[r], 'discord:type') === 'command')
         .map((r) => {
@@ -103,27 +118,40 @@ export default class CommandClient extends Client {
           return { fn, event }
         }) as ListenerType[]
 
+      ext.load()
+
       this.extensions.push(ext)
     })
   }
 
-  unloadExtensions(path1: string, reload: boolean = false) {
-    if (!reload) {
-    }
+  unloadExtensions(path1: string, absolute: boolean = false) {
     let path2: string | undefined
     try {
-      path2 = path.resolve(
-        path.join(this.commandClientOptions.currentDir, path1),
+      path2 = require.resolve(
+        path.resolve(path.join(this.commandClientOptions.currentDir, path1)),
       )
     } catch {
-      throw new CommandClientError(
-        'Unknown path ' +
-          path.join(this.commandClientOptions.currentDir, path1),
-      )
+      try {
+        if (absolute) {
+          path2 = require.resolve(path1)
+        } else {
+          path2 = require.resolve(
+            path.resolve(
+              path.join(this.commandClientOptions.currentDir, path1),
+            ),
+          )
+        }
+      } catch {
+        throw new CommandClientError(
+          'Unknown path ' +
+            path.join(this.commandClientOptions.currentDir, path1),
+        )
+      }
     }
-    const mod = this.extensions.find((r) => r.__path === path2)
-    if (!mod) throw new CommandClientError('Module not registered.')
+    const mod = this.extensions.filter((r) => r.__path === path2)
+    mod.forEach((r) => r.unload())
+    if (!mod.length) throw new CommandClientError('Module not registered.')
     delete require.cache[require.resolve(path2)]
-    this.extensions = this.extensions.filter((r) => r !== mod)
+    this.extensions = this.extensions.filter((r) => !mod.includes(r))
   }
 }

@@ -18,6 +18,7 @@ export default class Test extends Extension {
   @Command({ name: 'unload' })
   unloadExt(@Msg() msg: Message) {
     this.client.unloadExtensions('extensions/test')
+    this.client.loadExtensions('extensions/test')
     return msg.reply('unload')
   }
 }
