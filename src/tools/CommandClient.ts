@@ -83,7 +83,12 @@ export default class CommandClient extends Client {
         listeners.push(listener)
       }
     }
-    listeners.forEach((r) => r.fn(event, ...args))
+    listeners.forEach((r) =>
+      r.fn.bind(this.extensions.find((x) => x.listeners.find((n) => n === r)))(
+        event,
+        ...args,
+      ),
+    )
     return super.emit(event, ...args)
   }
 
