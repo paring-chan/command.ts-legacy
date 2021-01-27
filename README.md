@@ -19,6 +19,7 @@ tsconfig.json
     "module": "commonjs",
     "esModuleInterop": true,
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "skipLibCheck": true
   }
 }
