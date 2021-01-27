@@ -128,6 +128,7 @@ export default class CommandClient extends Client {
       if (notfound) {
         throw new CommandClientError('No extensions found in module')
       }
+      return this.loadExtensions(path1, absolute, true)
     }
     extensions.forEach((i) => {
       const ext = new i(this) as any
