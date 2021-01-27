@@ -31,6 +31,8 @@ export default class CommandClient extends Client {
         if (ext) {
           try {
             this.unloadExtensions(ext.__path, true)
+          } catch {}
+          try {
             this.loadExtensions(ext.__path, true)
           } catch {}
         }
@@ -146,6 +148,9 @@ export default class CommandClient extends Client {
           const event = Reflect.get(fn, 'listener:event')
           return { fn, event }
         }) as ListenerType[]
+
+      if (this.extensions.find((r) => r === ext))
+        throw new CommandClientError('extension already loaded.')
 
       ext.load()
 
