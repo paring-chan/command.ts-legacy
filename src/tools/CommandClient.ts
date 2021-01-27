@@ -31,10 +31,14 @@ export default class CommandClient extends Client {
         if (ext) {
           try {
             this.unloadExtensions(ext.__path, true)
-          } catch {}
+          } catch (e) {
+            console.error(`watcher | UNLOAD: ${e.message}`)
+          }
           try {
             this.loadExtensions(ext.__path, true)
-          } catch {}
+          } catch (e) {
+            console.error(`watcher | LOAD: ${e.message}`)
+          }
         }
       })
     }
