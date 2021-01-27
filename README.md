@@ -20,6 +20,7 @@ tsconfig.json
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "skipLibCheck": true
+  }
 }
 ```
 
