@@ -94,7 +94,7 @@ export default class CommandClient extends Client {
     return super.emit(event, ...args)
   }
 
-  loadExtensions(path1: string, absolute: boolean = false) {
+  loadExtensions(path1: string, absolute: boolean = false, notfound = false) {
     let path2: string
     try {
       if (absolute) {
@@ -119,8 +119,12 @@ export default class CommandClient extends Client {
     const extensions = Object.values(mod).filter(
       (r: any) => r.prototype instanceof Extension,
     ) as any[]
-    if (!extensions.length)
-      throw new CommandClientError('No extensions found in module')
+    if (!extensions.length) {
+      delete require.cache[path2]
+      if (notfound) {
+        throw new CommandClientError('No extensions found in module')
+      }
+    }
     extensions.forEach((i) => {
       const ext = new i(this) as any
       const keys = Object.getOwnPropertyNames(i.prototype).filter(
