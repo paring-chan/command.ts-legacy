@@ -98,7 +98,11 @@ export default class CommandClient extends Client {
     return super.emit(event, ...args)
   }
 
-  loadExtensions(path1: string, absolute: boolean = false, notfound = false) {
+  loadExtensions(
+    path1: string,
+    absolute: boolean = false,
+    notfound = false,
+  ): void {
     let path2: string
     try {
       if (absolute) {
