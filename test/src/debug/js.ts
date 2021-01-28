@@ -11,6 +11,6 @@ export default class JavaScript extends Feature {
   }
 
   async execute(msg: Message, args: string[]) {
-    console.log(args)
+    const input = args.join(' ')
   }
 }

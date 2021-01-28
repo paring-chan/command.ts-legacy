@@ -57,7 +57,7 @@ export default class Debugging extends Extension {
           new Date(Date.now() - process.uptime() * 1000),
         ).fromNow()}, bot was ready at ${dayjs(
           this.client.readyAt!,
-        ).fromNow()}.\nUsing ${this.memory().rss} at this process.\n${
+        ).fromNow()}.\nUsing ${this.memory().rss} at this process.\n\n${
           this.client.shard
             ? `This bot is sharded(current: ${this.client.shard.ids.reduce(
                 (acc, cur) => acc + cur,
@@ -67,7 +67,7 @@ export default class Debugging extends Extension {
                 await this.client.shard.fetchClientValues('users.cache.size')
               ).reduce((a, b) => a + b)} user(s)`
             : `This bot is not sharded and can see ${this.client.guilds.cache.size} guild(s) and ${this.client.users.cache.size} user(s)`
-        }.\nMessage latecy: ${this.client.ws.ping}ms\nview help with \`${
+        }.\nMessage latecy: ${this.client.ws.ping}ms\n\nView help with \`${
           this.client.commandClientOptions.commandHandler.prefix
         }jsk help\``,
       )
@@ -75,7 +75,11 @@ export default class Debugging extends Extension {
 
     if (!feature)
       return msg.reply(
-        `Available features: ${this.features.map((r) => r.name)}`,
+        `Available features: ${this.features
+          .map((r) => '`' + r.name + '`')
+          .join(', ')}`,
       )
+
+    feature.execute(msg, args)
   }
 }
