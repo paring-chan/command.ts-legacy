@@ -29,7 +29,13 @@ export default class CommandClient extends Client {
           (r) => r.__path === require.resolve(path),
         )
         if (ext) {
-          delete require.cache[require.resolve(path)]
+          const path2 = require.resolve(path)
+          delete require.cache[path]
+          try {
+            require(path2)
+          } catch {
+            return
+          }
           try {
             this.unloadExtensions(ext.__path, true)
           } catch (e) {
