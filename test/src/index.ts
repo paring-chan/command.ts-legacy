@@ -12,5 +12,6 @@ const client = new CommandClient({
 })
 
 client.loadExtensions('extensions/test')
+client.loadExtensions('extensions/jishaku')
 
 client.login(process.env.TOKEN)

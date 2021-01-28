@@ -39,12 +39,12 @@ export default class CommandClient extends Client {
           try {
             this.unloadExtensions(ext.__path, true)
           } catch (e) {
-            console.error(`watcher | UNLOAD: ${e.message}`)
+            console.error(`watcher | UNLOAD: `, e)
           }
           try {
             this.loadExtensions(ext.__path, true)
           } catch (e) {
-            console.error(`watcher | LOAD: ${e.message}`)
+            console.error(`watcher | LOAD: `, e)
           }
         }
       })
