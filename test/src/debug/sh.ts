@@ -43,7 +43,7 @@ export default class Shell extends Feature {
       this.client,
       msg.channel as TextChannel,
       msg,
-      `> ${content}\n`,
+      `$ ${content}\n`,
       '',
       true,
     )
@@ -79,11 +79,11 @@ export default class Shell extends Feature {
       res.append('\n' + data.toString())
     })
     proc.stderr.on('data', (data) => {
-      res.append('\n[STDERR] ' + data.toString())
+      res.append('\n[stderr] ' + data.toString())
     })
     proc.on('close', (code) => {
       console.log(clearTimeout(timeout))
-      res.append('\n[STATUS] process exited with code ' + code)
+      res.append('\n[status] Return code ' + code)
     })
     proc.on('error', (err) => {
       console.log(clearTimeout(timeout))
