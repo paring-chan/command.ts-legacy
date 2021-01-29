@@ -6,6 +6,7 @@ export default class PageUp extends Action {
   constructor(client: CommandClient) {
     super(client, {
       emoji: '▶️',
+      pageRequired: true,
     })
   }
 

@@ -101,7 +101,7 @@ export default class PaginatedResult {
     this.actions
       .filter((r) => {
         if (!r.pageRequired) return true
-        return this.splitted.length && r.pageRequired ? true : false
+        return this.splitted.length !== 1 && r.pageRequired ? true : false
       })
       .map((r) => r.emoji)
       .filter((r) => !this.msg!.reactions.cache.get(r))
