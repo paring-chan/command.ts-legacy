@@ -99,6 +99,10 @@ export default class PaginatedResult {
   async react() {
     if (!this.msg) return
     this.actions
+      .filter((r) => {
+        if (!r.pageRequired) return true
+        return this.splitted.length && r.pageRequired ? true : false
+      })
       .map((r) => r.emoji)
       .filter((r) => !this.msg!.reactions.cache.get(r))
       .map((r) => this.msg!.react(r))
