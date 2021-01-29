@@ -26,8 +26,8 @@ export default class JavaScript extends Feature {
       this.client,
       msg.channel as TextChannel,
       msg,
-      typeof result === 'string'
-        ? result
+      typeof result.result === 'string'
+        ? result.result
         : require('util').inspect(result.result),
       'js',
     )

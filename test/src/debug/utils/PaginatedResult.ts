@@ -6,7 +6,9 @@ import {
   User,
   Util,
 } from 'discord.js'
+import { runInThisContext } from 'vm'
 import { CommandClient } from '../../../../dist'
+import Destroy from '../actions/Destroy'
 import PageDown from '../actions/PageDown'
 import PageUp from '../actions/PageUp'
 import Action from './Action'
@@ -101,6 +103,7 @@ export default class PaginatedResult {
   async react() {
     if (!this.msg) return
     if (this.splitted.length > 1) {
+      this.addAction(new Destroy(this.client))
       this.addAction(new PageDown(this.client))
       this.addAction(new PageUp(this.client))
     }
@@ -133,13 +136,24 @@ export default class PaginatedResult {
 
   render() {
     const page = this.splitted[this.page] || 'Empty'
-    return !this.code && page.split('\n').length === 1
-      ? page
-      : '```' +
+    let result =
+      !this.code && page.split('\n').length === 1
+        ? page
+        : '```' +
           (this.lang || '') +
           '\n' +
           page +
           '```\n' +
           `Page ${this.page + 1}/${this.splitted.length}`
+    const secrets = [this.client.token!]
+    for (const secret of secrets) {
+      result = result.replace(new RegExp(secret, 'gi'), '[Secret]')
+    }
+    return result
+  }
+
+  destroy() {
+    this.reactionCollector?.stop()
+    this.msg?.reactions.removeAll().catch(() => null)
   }
 }
