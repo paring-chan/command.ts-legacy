@@ -12,20 +12,27 @@ export default class JavaScript extends Feature {
     })
   }
 
-  async execute(msg: Message, args: string[]) {
+  async execute(_message: Message, args: string[]) {
+    const {
+      author: _author,
+      channel: _channel,
+      guild: _guild,
+      client: _bot,
+    } = _message
+    const _msg = _message
     const input = args.join(' ')
     const result = await new Promise((resolve) => resolve(eval(input)))
       .then((res) => ({ error: false, result: res }))
       .catch((e) => ({ error: true, result: e.stack }))
     if (result.error) {
-      await msg.react('‼️')
+      await _message.react('‼️')
     } else {
-      await msg.react('✅')
+      await _message.react('✅')
     }
     const paginator = new PaginatedResult(
       this.client,
-      msg.channel as TextChannel,
-      msg,
+      _message.channel as TextChannel,
+      _message,
       typeof result.result === 'string'
         ? result.result
         : require('util').inspect(result.result),
