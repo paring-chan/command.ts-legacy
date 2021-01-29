@@ -75,7 +75,7 @@ export default class Debugging extends Extension {
                 await this.client.shard.fetchClientValues('users.cache.size')
               ).reduce((a, b) => a + b)} user(s)`
             : `This bot is not sharded and can see ${this.client.guilds.cache.size} guild(s) and ${this.client.users.cache.size} user(s)`
-        }.\nMessage latecy: ${this.client.ws.ping}ms\n\nView help with \`${
+        }.\nWebSocket latecy: ${this.client.ws.ping}ms\n\nView help with \`${
           this.client.commandClientOptions.commandHandler.prefix
         }jsk help\``,
       )

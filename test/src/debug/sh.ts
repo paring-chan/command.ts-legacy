@@ -26,6 +26,10 @@ export default class Shell extends Feature {
 
   async execute(msg: Message, args: string[]) {
     const content = args.join(' ')
+    if (!content) {
+      msg.reply('Missing arguments.')
+      return
+    }
     const shell =
       process.env.SHELL || (process.platform === 'win32' ? 'powershell' : null)
     console.log(shell)
