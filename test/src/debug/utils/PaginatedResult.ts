@@ -6,11 +6,7 @@ import {
   User,
   Util,
 } from 'discord.js'
-import { runInThisContext } from 'vm'
 import { CommandClient } from '../../../../dist'
-import Destroy from '../actions/Destroy'
-import PageDown from '../actions/PageDown'
-import PageUp from '../actions/PageUp'
 import Action from './Action'
 
 export default class PaginatedResult {
@@ -102,20 +98,15 @@ export default class PaginatedResult {
 
   async react() {
     if (!this.msg) return
-    if (this.splitted.length > 1) {
-      this.addAction(new Destroy(this.client))
-      this.addAction(new PageDown(this.client))
-      this.addAction(new PageUp(this.client))
-    }
     this.actions
       .map((r) => r.emoji)
       .filter((r) => !this.msg!.reactions.cache.get(r))
       .map((r) => this.msg!.react(r))
   }
 
-  addAction(action: Action) {
+  setActions(action: Action[]) {
     if (!this.actions.find((r) => r instanceof action.constructor)) {
-      this.actions.push(action)
+      this.actions = action
       this.react()
     }
   }

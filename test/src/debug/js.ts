@@ -1,6 +1,8 @@
 import { Message, TextChannel } from 'discord.js'
-import { CommandClient, Msg } from '../../../dist'
+import { CommandClient } from 'command.ts'
+import Destroy from './actions/Destroy'
 import PageDown from './actions/PageDown'
+import PageUp from './actions/PageUp'
 import Feature from './Feature'
 import PaginatedResult from './utils/PaginatedResult'
 
@@ -17,12 +19,8 @@ export default class JavaScript extends Feature {
       _message.reply('Missing arguments')
       return
     }
-    const {
-      author: _author,
-      channel: _channel,
-      guild: _guild,
-      client: _bot,
-    } = _message
+    const { author: _author, channel: _channel, guild: _guild } = _message
+    const _bot = this.client
     const _msg = _message
     const input = args.join(' ')
     const result = await new Promise((resolve) => resolve(eval(input)))
@@ -43,5 +41,10 @@ export default class JavaScript extends Feature {
       'js',
     )
     await paginator.init()
+    paginator.setActions([
+      new Destroy(_bot),
+      new PageDown(_bot),
+      new PageUp(_bot),
+    ])
   }
 }
