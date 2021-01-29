@@ -12,14 +12,6 @@ export default class Debugging extends Extension {
   watcher?: chokidar.FSWatcher
 
   load() {
-    this.watcher = chokidar
-      .watch(path.resolve(path.join(__dirname, '../debug')))
-      .on('change', (dir) => {
-        console.log(dir)
-        delete require.cache[dir]
-        this.unload()
-        this.load()
-      })
     this.addDefaultFeature('js')
   }
 
