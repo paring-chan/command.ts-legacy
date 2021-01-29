@@ -4,13 +4,28 @@ import path from 'path'
 import Feature from '../debug/Feature'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import chokidar from 'chokidar'
 dayjs.extend(relativeTime)
 
 export default class Debugging extends Extension {
   features: Feature[] = []
+  watcher?: chokidar.FSWatcher
 
   load() {
+    this.watcher = chokidar
+      .watch(path.resolve(path.join(__dirname, '../debug')))
+      .on('change', (dir) => {
+        console.log(dir)
+        delete require.cache[dir]
+        this.unload()
+        this.load()
+      })
     this.addDefaultFeature('js')
+  }
+
+  unload() {
+    this.watcher?.unwatch(path.resolve(path.join(__dirname, '../debug')))
+    this.features = []
   }
 
   private addDefaultFeature(path2: string) {
