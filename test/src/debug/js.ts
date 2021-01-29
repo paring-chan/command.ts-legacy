@@ -1,5 +1,5 @@
 import { Message, TextChannel } from 'discord.js'
-import { CommandClient } from '../../../dist'
+import { CommandClient, Msg } from '../../../dist'
 import PageDown from './actions/PageDown'
 import Feature from './Feature'
 import PaginatedResult from './utils/PaginatedResult'
@@ -13,6 +13,10 @@ export default class JavaScript extends Feature {
   }
 
   async execute(_message: Message, args: string[]) {
+    if (!args.length) {
+      _message.reply('Missing arguments')
+      return
+    }
     const {
       author: _author,
       channel: _channel,
