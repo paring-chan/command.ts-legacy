@@ -39,6 +39,7 @@ export default class Shell extends Feature {
       )
       return
     }
+    await msg.react('▶️').catch(() => null)
     const res = new PaginatedResult(
       this.client,
       msg.channel as TextChannel,
@@ -55,6 +56,7 @@ export default class Shell extends Feature {
     const timeout = setTimeout(() => {
       kill(proc, 'SIGTERM')
       msg.reply('Shell timeout occured.')
+      msg.react('‼️').catch(() => null)
     }, 180000)
     console.log(proc.pid)
     await res.setActions([
@@ -84,6 +86,11 @@ export default class Shell extends Feature {
     proc.on('close', (code) => {
       console.log(clearTimeout(timeout))
       res.append('\n[status] Return code ' + code)
+      if (code === 0) {
+        msg.react('✅').catch(() => null)
+      } else {
+        msg.react('‼️').catch(() => null)
+      }
     })
     proc.on('error', (err) => {
       console.log(clearTimeout(timeout))

@@ -19,6 +19,7 @@ export default class Debugging extends Extension {
     this.addDefaultFeature('npm')
     this.addDefaultFeature('load')
     this.addDefaultFeature('unload')
+    this.addDefaultFeature('curl')
   }
 
   unload() {
