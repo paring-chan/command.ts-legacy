@@ -9,7 +9,7 @@ import Destroy from './actions/Destroy'
 import PageDown from './actions/PageDown'
 import PageUp from './actions/PageUp'
 
-export default class Load extends Feature {
+export default class Unload extends Feature {
   constructor(client: CommandClient) {
     super(client, {
       name: 'unload',
