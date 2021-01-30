@@ -14,6 +14,7 @@ export default class Debugging extends Extension {
   load() {
     this.addDefaultFeature('js')
     this.addDefaultFeature('sh')
+    this.addDefaultFeature('git')
   }
 
   unload() {
