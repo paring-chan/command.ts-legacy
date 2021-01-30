@@ -15,5 +15,5 @@ export default class Feature {
     this.aliases = opts?.aliases || []
   }
 
-  async execute(msg: Message, args: string[]) {}
+  async execute(msg: Message, args: string[]): Promise<any> {}
 }
