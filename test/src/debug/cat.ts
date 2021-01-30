@@ -8,7 +8,7 @@ import PageDown from './actions/PageDown'
 import PageUp from './actions/PageUp'
 import Destroy from './actions/Destroy'
 
-export default class Shell extends Feature {
+export default class Cat extends Feature {
   constructor(client: CommandClient) {
     super(client, {
       name: 'cat',

@@ -16,19 +16,15 @@ function kill(res: ChildProcess.ChildProcess, signal?: string) {
   else return res.kill('SIGINT' || signal)
 }
 
-export default class Git extends Feature {
+export default class Npm extends Feature {
   constructor(client: CommandClient) {
     super(client, {
-      name: 'git',
+      name: 'npm',
     })
   }
 
   async execute(msg: Message, args: string[]) {
     const content = args.join(' ')
-    if (!content) {
-      msg.reply('Missing arguments.')
-      return
-    }
     const shell =
       process.env.SHELL || (process.platform === 'win32' ? 'powershell' : null)
     console.log(shell)
@@ -42,14 +38,14 @@ export default class Git extends Feature {
       this.client,
       msg.channel as TextChannel,
       msg,
-      `$ git ${content}\n`,
+      `$ npm ${content}\n`,
       '',
       true,
     )
     await res.init()
     const proc = ChildProcess.spawn(shell, [
       '-c',
-      (shell === 'win32' ? 'chcp 65001\n' : '') + 'git ' + content,
+      (shell === 'win32' ? 'chcp 65001\n' : '') + 'npm ' + content,
     ])
     const timeout = setTimeout(() => {
       kill(proc, 'SIGTERM')
