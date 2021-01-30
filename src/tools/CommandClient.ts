@@ -5,6 +5,12 @@ import CommandClientError from './CommandClientError'
 import Extension from './Extension'
 import chokidar from 'chokidar'
 
+declare module 'discord.js' {
+  interface Message {
+    sudo: boolean
+  }
+}
+
 export default class CommandClient extends Client {
   commandClientOptions: CommandClientOptions
   extensions: Extension[] = []
@@ -79,10 +85,12 @@ export default class CommandClient extends Client {
       (r) => r.name === command || r.aliases.includes(command),
     )
     if (!cmd) return
-    if (cmd.ownerOnly && !this.owners.includes(msg.author.id))
-      return this.emit('commandBlocked', msg, 'owner')
-    if (!(await mod.permit(msg)))
-      return this.emit('commandBlocked', msg, 'denied')
+    if (!msg.sudo) {
+      if (cmd.ownerOnly && !this.owners.includes(msg.author.id))
+        return this.emit('commandBlocked', msg, 'owner')
+      if (!(await mod.permit(msg)))
+        return this.emit('commandBlocked', msg, 'denied')
+    }
     cmd.fn.bind(mod)(msg, args)
   }
 
