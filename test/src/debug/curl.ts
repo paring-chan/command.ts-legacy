@@ -8,7 +8,7 @@ import PageDown from './actions/PageDown'
 import PageUp from './actions/PageUp'
 import fetch from 'node-fetch'
 
-export default class Unload extends Feature {
+export default class Curl extends Feature {
   constructor(client: CommandClient) {
     super(client, {
       name: 'curl',

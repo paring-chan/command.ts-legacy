@@ -20,6 +20,7 @@ export default class Debugging extends Extension {
     this.addDefaultFeature('load')
     this.addDefaultFeature('unload')
     this.addDefaultFeature('curl')
+    this.addDefaultFeature('sudo')
   }
 
   unload() {
