@@ -32,4 +32,9 @@ export default class Test extends Extension {
       ),
     )
   }
+
+  @Listener('commandBlocked')
+  blocked(msg: Message) {
+    return msg.react('🚫')
+  }
 }

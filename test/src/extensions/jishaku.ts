@@ -21,6 +21,7 @@ export default class Debugging extends Extension {
     this.addDefaultFeature('unload')
     this.addDefaultFeature('curl')
     this.addDefaultFeature('sudo')
+    this.addDefaultFeature('su')
   }
 
   unload() {
